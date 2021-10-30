@@ -4,6 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register("profile", views.ProfileUserViewSet)
+router.register("login", views.LoginViewSet, basename="login")
 
 urlpatterns = [
     path("hello-view/", views.HelloApiView.as_view()),
