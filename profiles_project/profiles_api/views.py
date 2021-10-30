@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from . import serializers
+from . import models
 from rest_framework import status
 
 
@@ -13,9 +15,9 @@ class HelloApiView(APIView):
     def get(self, request, format=None):
         """returns a list of apiview features."""
 
-        an_apiview = ['Uses HTTP methods as function (get,post,put,delete)']
+        an_apiview = ["Uses HTTP methods as function (get,post,put,delete)"]
 
-        return Response({'message': 'HEllo!', 'an_apiview': an_apiview})
+        return Response({"message": "HEllo!", "an_apiview": an_apiview})
 
     def post(self, request):
         """Create a hello message with our name."""
@@ -23,8 +25,16 @@ class HelloApiView(APIView):
         serializer = serializers.HelloSerializer(data=request.data)
 
         if serializer.is_valid():
-            name = serializer.data.get('name')
-            message = 'Hello {0}'.format(name)
-            return Response({'message': message})
+            name = serializer.data.get("name")
+            message = "Hello {0}".format(name)
+            return Response({"message": message})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileUserViewSet(viewsets.ModelViewSet):
+    """Handles creating and updating profiles"""
+
+    serializer_class = serializers.UserProfileSerializer
+
+    queryset = models.UserProfile.objects.all()
