@@ -58,7 +58,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 class ProfileFeedItem(models.Model):
     """Profile status update."""
 
-    user_profile = models.ForeignKey("userProfile", on_delete=models.CASCADE)
+    user_profile = models.ForeignKey("UserProfile", on_delete=models.CASCADE)
     status_text = models.CharField(max_length=255)
     create_on = models.DateTimeField(auto_now_add=True)
 

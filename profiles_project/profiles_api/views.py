@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework import filters
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
 
 
 class ProfileUserViewSet(viewsets.ModelViewSet):
@@ -38,26 +39,14 @@ class LoginViewSet(viewsets.ViewSet):
         return ObtainAuthToken().as_view()(request=request._request)
 
 
-class HelloApiView(APIView):
-    """Test API View."""
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handels creating, reading and updateing profile feed items."""
 
-    serializer_class = serializers.HelloSerializer
+    auth_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+    permission_classes = (permissions.PostOwnStatus, IsAuthenticated)
 
-    def get(self, request, format=None):
-        """returns a list of apiview features."""
-
-        an_apiview = ["Uses HTTP methods as function (get,post,put,delete)"]
-
-        return Response({"message": "HEllo!", "an_apiview": an_apiview})
-
-    def post(self, request):
-        """Create a hello message with our name."""
-
-        serializer = serializers.HelloSerializer(data=request.data)
-
-        if serializer.is_valid():
-            name = serializer.data.get("name")
-            message = "Hello {0}".format(name)
-            return Response({"message": message})
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user."""
+        serializer.save(user_profile=self.request.user)
